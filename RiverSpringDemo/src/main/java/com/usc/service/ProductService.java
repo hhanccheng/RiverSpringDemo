@@ -35,7 +35,7 @@ public class ProductService {
 	//put
 	public Response changeProduct(Product product) {
 		Product p = productDao.findById(product.getId()).get();
-		p.setBrand(product.getImage());
+		p.setBrand(product.getBrand());
 		p.setImage(p.getImage());
 		p.setPrice(product.getPrice());
 		p.setName(product.getName());

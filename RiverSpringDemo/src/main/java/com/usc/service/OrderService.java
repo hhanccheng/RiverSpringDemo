@@ -72,11 +72,15 @@ public class OrderService {
 	public Response addOrder(Order order, Authentication authentication) {
 		try {
 			List<OrderProduct> purchaseOrderProducts = order.getPurchaseOrderProducts();
-			for(OrderProduct orderProduct : purchaseOrderProducts) {
-				Product product = (Product)productDao.getOne(orderProduct.getProductid());
-				orderProduct.setProduct(product);
-				orderProduct.setOrder(order);
-			}
+			purchaseOrderProducts.forEach((orderProduct) -> {
+				Product product = (Product)productDao.findById(orderProduct.getProduct().getId()).get();
+				int leftStock = product.getStock() - orderProduct.getQuantity();
+				if(leftStock >= 0) {
+					product.setStock(leftStock);
+					orderProduct.setProduct(product);
+					orderProduct.setOrder(order);
+				}
+			});
 			order.setUser(userDao.findByUsername(authentication.getName()));
 			orderDao.save(order);
 			order.setPurchaseOrderProducts(purchaseOrderProducts);
@@ -89,14 +93,22 @@ public class OrderService {
 	public Response changeOrder(Order order) {
 		Order o = orderDao.findById(order.getId()).get();
 		o.setPurchase_date(order.getPurchase_date());
-		for(OrderProduct orderProduct : order.getPurchaseOrderProducts()) {
-			if(orderProduct.getAmount() > orderProduct.getProduct().getStock()) {
-				return new Response(false, "Not enough Products in Stock");
-			}
-		}
+		try {
+			List<OrderProduct> purchaseOrderProducts = order.getPurchaseOrderProducts();
+			purchaseOrderProducts.forEach((orderProduct) -> {
+				Product product = (Product)productDao.findById(orderProduct.getProduct().getId()).get();
+				int leftStock = product.getStock() - orderProduct.getQuantity();
+				if(leftStock >= 0) {
+					product.setStock(leftStock);
+					orderProduct.setProduct(product);
+				}
+		});
 		o.setPurchaseOrderProducts(order.getPurchaseOrderProducts());
 		orderDao.save(o);
 		return new Response(true);
+		}catch (Exception e) {
+			return new Response(false,e.getMessage());
+		}
 	}
 	//delete
 	public Response deleteOrder(int id) {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.usc.beans.Order;
 import com.usc.http.Response;
+import com.usc.service.OrderProductService;
 import com.usc.service.OrderService;
 
 @RestController()
@@ -23,6 +24,9 @@ import com.usc.service.OrderService;
 public class OrderController {
 	@Autowired
 	OrderService orderService;
+	
+	@Autowired
+	OrderProductService orderProductService;
 	
 	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
 	@GetMapping
@@ -38,6 +42,7 @@ public class OrderController {
 	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
 	@PostMapping
 	public Response addOrder(@RequestBody Order order, Authentication authentication) {
+		
 		return orderService.addOrder(order, authentication);
 	}
 	

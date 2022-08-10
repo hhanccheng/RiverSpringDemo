@@ -34,9 +34,11 @@ public class Product {
 	private int stock;
 	@Column
 	private String image;
-	
-	
 
+	public Product(int id) {
+		super();
+		this.id = id;
+	}
 	public Product() {
 		super();
 	}

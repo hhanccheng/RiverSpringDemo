@@ -5,7 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import com.usc.beans.OrderProduct;
 
+
 @Repository
 public interface OrderProductDao extends JpaRepository<OrderProduct, Integer> {
-
+	
 }

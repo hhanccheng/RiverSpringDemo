@@ -25,38 +25,42 @@ public class OrderProductService {
 	@Autowired
 	OrderProductDao orderProductDao;
 	
+	public OrderProduct getOrderProduct(int id) {
+		return orderProductDao.findById(id).get();
+	}
+	
 	public List<OrderProduct> getOrderProducts() {
 		return orderProductDao.findAll();
 	}
 	
 	//post
 	public Response addOrderProduct(OrderProduct orderProduct) {
-		int leftStock = productDao.getOne(orderProduct.getProductid()).getStock() - orderProduct.getAmount();
+		int leftStock = productDao.findById(orderProduct.getProduct().getId()).get().getStock() - orderProduct.getQuantity();
 		if(leftStock >= 0) {
-			productDao.getOne(orderProduct.getProductid()).setStock(leftStock);
-			orderProduct.setProduct(productDao.getOne(orderProduct.getProductid()));
+			productDao.findById(orderProduct.getProduct().getId()).get().setStock(leftStock);
+			productDao.save(productDao.findById(orderProduct.getProduct().getId()).get());
+			orderProduct.setProduct(productDao.findById(orderProduct.getProduct().getId()).get());
 			orderProductDao.save(orderProduct);
-			productDao.save(productDao.getOne(orderProduct.getProductid()));
 			return new Response(true);
 		}else {
-			return new Response(false, "Out Stock, Stock left:" + leftStock);
+			return new Response(false, "Out the stock :" + leftStock);
 		}
 		
 	}
 	//put
 	public Response changeOrderProduct(OrderProduct orderProduct) {
-		int leftStock = productDao.findById(orderProduct.getProductid()).get().getStock() - (orderProduct.getAmount() - orderProductDao.findById(orderProduct.getId()).get().getAmount());
+		int leftStock = productDao.findById(orderProduct.getProduct().getId()).get().getStock() - (orderProduct.getQuantity() - orderProductDao.findById(orderProduct.getId()).get().getQuantity());
 		if(leftStock >= 0) {
-			productDao.findById(orderProduct.getProductid()).get().setStock(leftStock);
+			productDao.findById(orderProduct.getProduct().getId()).get().setStock(leftStock);
 			OrderProduct op = orderProductDao.findById(orderProduct.getId()).get();
 			op.setOrder(orderProduct.getOrder());
+			productDao.save(productDao.findById(orderProduct.getProduct().getId()).get());
 			op.setProduct(orderProduct.getProduct());
-			op.setAmount(orderProduct.getAmount());
+			op.setQuantity(orderProduct.getQuantity());
 			orderProductDao.save(op);												
-			productDao.save(productDao.findById(orderProduct.getProductid()).get());
 			return new Response(true);
 		}else {
-			return new Response(false, "Out Stock, Stock left:" + leftStock);
+			return new Response(false, "Out the stock :" + leftStock);
 		}
 	}
 	

@@ -13,6 +13,4 @@ import com.usc.beans.User;
 public interface OrderDao extends JpaRepository<Order, Integer> {
 	List<Order> findAllByUser(User user);
 
-	
-
 }

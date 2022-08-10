@@ -23,13 +23,13 @@ public class ProductController {
 	@Autowired
 	ProductService productService;
 	
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
 	@GetMapping("/{id}")
 	public Product getProduct(@PathVariable int id) {
 		return productService.getProduct(id);
 	}
 	
-	//@PreAuthorize("hasAuthority('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
 	@GetMapping
 	public List<Product> getProducts(){
 		return productService.getProducts();
@@ -48,8 +48,8 @@ public class ProductController {
 	}
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@DeleteMapping("/{id}")
-	public Response deleteProduct(@PathVariable Product product) {
-		return productService.deleteProduct(product.getId());
+	public Response deleteProduct(@PathVariable int id) {
+		return productService.deleteProduct(id);
 	}
 	
 }
